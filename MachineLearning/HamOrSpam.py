@@ -137,7 +137,40 @@ def get_posterior(term_doctument_matrix, prior, likelihood):
             else:
                 posterior[label] /= sum_posterior
                 posteriors.append(posterior.copy())
-                return posteriors
+         return posteriors
+
+from sklearn.model_selection import train_test_split
+X_train, X_test, Y_train, Y_test = train_test_split(cleaned_emails, labels, test_size=0.33, random_state=42)
+
+len(X_train), len(Y_train)
+len(X_test), len(Y_test)
+
+term_docs_train = cv.fit_transform(X_train)
+label_index = get_label_index(Y_train)
+prior = get_prior (label_index)
+likelihood = get_likelihood(term_docs_train, label_index, smoothing)
+
+term_docs_test = cv.transform(X_test)
+posterior = get_posterior(term_docs_tests, prior, likelihood)
+
+correct =0.0
+for pred, actual in zip(posterior, Y_test):
+    if actual ==1
+    if pred[1] >= 0.5:
+        cprrect += 1
+    elif pred[0] > 0.5:
+        correct += 1
+    print('The accuracy on {0} testing samples is : {1:.1f}%'.format(len(Y_test), correct/len(Y_test)*100))
+
+
+#Simple Native Bayes System
+from sklearn.native_bayes import MultnomialNB
+clf = MultinomialNB(alpha=1.0, fit prior=True)
+clf.fit(term_docs_train, Y_train)
+predict_prob = clf.predict_proba(term_docs_test)
+prediction_prob[0:10]
+accuracy = clf.score(term_docs_test,Y_test)
+print('The accuracy using MutlinoomialNB is: (0:.1f)%'.format(accuracy*100))
 
 
 
