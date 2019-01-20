@@ -24,13 +24,13 @@ for filename in gbob.glob(os.path.join(file_path, '*.txt')):
 len(emails)
 len(labels)
 
-def letters_only(astr)
+def letters_only(astr):
     return astr.isalpha()
 
 all_names = set(names.words())
 lemmatizer = WordNetLemmatizer()
 
-def clean_text(docs)
+def clean_text(docs):
     cleaned_docs = []
     for doc in docs:
         cleaned_docs.append(
@@ -50,10 +50,10 @@ feature_names = cv.get_feature_names()
 print (feature_names[100])
 feature_mapping = cv.vocabulary_
 
-def get_label_index(labels)
+def get_label_index(labels):
     from collections import defaultdict
     label_index = defaultdict(list)
-    for index, label in enumerate(labels)
+    for index, label in enumerate(labels):
         label_index[label].append(index)
         return label_index
 
@@ -123,21 +123,21 @@ def get_posterior(term_doctument_matrix, prior, likelihood):
                 posterior[label] += np.log(likelihood_label[index])*count
             #exp(-1000) :exp(-999)will cause zero division error,'
             #however it equates to exp(0) :exp(1)min_log_posterior = min(posterior.values())
-            for label in posterior
-            try:
-                posterior[label] - min_log_posterior)
-            except:
-                #if ones log value is excessiverly large, asiign it infinity
-                posterior[label] = float('inf')
-            #normalize so that all sums up to 1
-            sum posterior = sum(posterior.values())
             for label in posterior:
-                if posterior[label] == float('inf')
-                posterior[label] = 1.0
-            else:
-                posterior[label] /= sum_posterior
+                try:
+                    posterior[label] = np.exp(posterior[label] - min_log_posterior)
+                except:
+                    #if ones log value is excessiverly large, asiign it infinity
+                    posterior[label] = float('inf')
+            #normalize so that all sums up to 1
+            sum_posterior = sum(posterior.values())
+            for label in posterior:
+                if posterior[label] == float('inf'):
+                    posterior[label] = 1.0
+                else:
+                    posterior[label] /= sum_posterior
                 posteriors.append(posterior.copy())
-         return posteriors
+            return posteriors
 
 from sklearn.model_selection import train_test_split
 X_train, X_test, Y_train, Y_test = train_test_split(cleaned_emails, labels, test_size=0.33, random_state=42)
@@ -155,9 +155,9 @@ posterior = get_posterior(term_docs_tests, prior, likelihood)
 
 correct =0.0
 for pred, actual in zip(posterior, Y_test):
-    if actual ==1
-    if pred[1] >= 0.5:
-        cprrect += 1
+    if actual ==1:
+        if pred[1] >= 0.5:
+            cprrect += 1
     elif pred[0] > 0.5:
         correct += 1
     print('The accuracy on {0} testing samples is : {1:.1f}%'.format(len(Y_test), correct/len(Y_test)*100))
@@ -165,14 +165,38 @@ for pred, actual in zip(posterior, Y_test):
 
 #Simple Native Bayes System
 from sklearn.native_bayes import MultnomialNB
-clf = MultinomialNB(alpha=1.0, fit prior=True)
-clf.fit(term_docs_train, Y_train)
-predict_prob = clf.predict_proba(term_docs_test)
-prediction_prob[0:10]
-accuracy = clf.score(term_docs_test,Y_test)
-print('The accuracy using MutlinoomialNB is: (0:.1f)%'.format(accuracy*100))
 
+#clf = MultinomialNB(alpha=1.0, fit prior=True)
+#clf.fit(term_docs_train, Y_train)
+#predict_prob = clf.predict_proba(term_docs_test)
+#prediction_prob[0:10]
+#accuracy = clf.score(term_docs_test,Y_test)
+#print('The accuracy using MutlinoomialNB is: (0:.1f)%'.format(accuracy*100))
 
+#Gets term inverse document frequency within emails
+from sklearn.feature_extraction.text import TfidfVectorizer
+from collections import defaultdict
+
+def inversedocumentfrequency:
+    smoothing_factoring_option = [1.0, 2.0, 3.0, 4.0, 5.0]
+    auc_record = defaultdict(float)
+    for train_indices, test_indices in k_fold.split(cleaned_emails, labels):
+      X_train, Xtest = cleaned_emails_np[train_indices], cleaned_emails_np[test_indices]
+      Y_train, Y_test = labels_np[train_indices], labels_np[test_indices]
+      tfiddf_vectorizer = TfidfVEctorizer(sublinear_tf=True, max_df=0.5, stop_words='english', max_features=8000)
+      term_docs_train = tfidf_vectorizer.fit_transform(X_train)
+      term_docs_test = tfidf_vectorizer.transform(X_test)
+      for smoothing_factor in smoothing_factor_option:
+          clf = MultinomialNB(alpha=smoothing_factor, fit_prior=True)
+          clf.fit(term_docs_train, Y_train)
+          predition_prob = clf.predict_prob[:, 1]
+          auc = roc_auc_score(Y_test, pos_prob)
+          auc_recording[smoothing_factor] += auc
+          print('max features smoothing fit prior auc')
+          for smoothing, smoothing_record in auc_record.iteritems():
+              print('8000 {0} true {1:.4f}'.format(smoothing, smoothing_record/k))
+
+inversedocumentfrequency()
 
 
 
