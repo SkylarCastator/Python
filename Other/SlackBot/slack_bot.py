@@ -21,19 +21,19 @@ slack_token = os.environ['SLACK_BOT_TOKEN']
 client = slack.WebClient(token=slack_token)
 channel = "random"
 
-rtm_client = slack.RTMClient(token=slack_token)
-rtm_client.start()
+#rtm_client = slack.RTMClient(token=slack_token)
+#rtm_client.start()
 
-CHANNEL_LIST = client.api_call("channels.list").get("channels", [])
-ANSWERS_LIST = [
-    "Umm, interesting I will ask my master for its meaning",
-    "I think it cool",
-    "Howdy!",
-    "What's up?",
-    "I see",
-    "Anythings else?",
-    "I'm done!!!"
-]
+#CHANNEL_LIST = client.api_call("channels.list").get("channels", [])
+#ANSWERS_LIST = [
+#    "Umm, interesting I will ask my master for its meaning",
+#    "I think it cool",
+#    "Howdy!",
+#    "What's up?",
+#    "I see",
+#    "Anythings else?",
+#    "I'm done!!!"
+#]
 
 #Example
 client.chat_postMessage(
@@ -48,20 +48,19 @@ client.chat_postMessage(
         "type": "section",
         "text": {
             "type": "mrkdwn",
-            "text": "Danny Torrence left the following review for your property:"
+            "text": "Current weather in Auckland NZ is rain"
         }
     },
     {
         "type": "section",
         "text": {
             "type": "mrkdwn",
-            "text": "<https://example.com|Overlook Hotel> \n :star: \n Doors had too many axe holes, guest in room " +
-            "237 was far too rowdy, whole place felt stuck in the 1920s."
+            "text": "<https://openweathermap.org/|Open Weather Map> \n Rain	5.4 mm \n Wind:Moderate breeze, 6.7 m/s, North-northeast ( 30 )"
         },
         "accessory": {
             "type": "image",
-            "image_url": "https://images.pexels.com/photos/750319/pexels-photo-750319.jpeg",
-            "alt_text": "Haunted hotel image"
+            "image_url": "https://patch.com/img/cdn20/users/22992871/20190313/094116/styles/raw/public/processed_images/donatphotography_rain_umbrella_shutterstock_728383990_copy-1552484394-5009.jpg",
+            "alt_text": "Rain"
         }
     },
     {
@@ -69,7 +68,7 @@ client.chat_postMessage(
         "fields": [
             {
                 "type": "mrkdwn",
-                "text": "*Average Rating*\n1.0"
+                "text": "*Temperature*\n18 C"
             }
         ]
     }
@@ -116,5 +115,6 @@ if __name__ == "__main__":
                     )
 
             time.sleep(1)
+
     else:
         print("Something wrong, please check your internet connection!")
