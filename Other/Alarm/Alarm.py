@@ -19,7 +19,8 @@ def start_alarm():
 def set_alarm(prompt):
     value = input(prompt)
     try:
-        return time.strptime(value[:8], '%H:%M:%S')
+        time.strptime(value[:8], '%H:%M:%S')
+        return value
     except ValueError:
         print("Sorry, That wasn't a correct time.")
     return set_alarm(prompt)
