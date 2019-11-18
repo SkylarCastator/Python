@@ -8,7 +8,7 @@ def start_alarm():
     print ('Use this form: \nExample: 06:30:00')
     alarm_time = set_alarm("> ")
     current_time = time.strftime("%H:%M:%S")
-
+    print ("Starting Alarm")
     while time != alarm_time:
         #print ("The time is " + current_time)
         current_time = time.strftime("%H:%M:%S")
@@ -17,15 +17,12 @@ def start_alarm():
                 activate_alarm()
 
 def set_alarm(prompt):
-    while True:
-	value = input(prompt)
-        try:
-            time.strftime(value, "%H:%M:%S")
-        except ValueError:
-            print("Sorry, That wasn't a correct time.")
-            continue
-        break
-    return value
+    value = input(prompt)
+    try:
+        return time.strptime(value[:8], '%H:%M:%S')
+    except ValueError:
+        print("Sorry, That wasn't a correct time.")
+    return set_alarm(prompt)
 
 def activate_alarm():
     print("Time to wake up!")
