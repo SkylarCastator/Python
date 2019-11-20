@@ -10,7 +10,7 @@ def start_alarm():
     current_time = time.strftime("%H:%M:%S")
     print ("Starting Alarm")
     while time != alarm_time:
-        #print ("The time is " + current_time)
+        print ("The time is " + current_time)
         current_time = time.strftime("%H:%M:%S")
         time.sleep(1)
         if current_time == alarm_time:
