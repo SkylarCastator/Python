@@ -15,12 +15,13 @@ import sys
 from os.path import expanduser
 import feedparser
 import listparser
+import random
 
 player = "mpv --no-video"
 
 def get_newest_episode(podcast):
     feed = feedparser.parse(podcast)
-    entry = feed.entries[0]
+    entry = feed.entries[random.randrange(0,len(feed))]
     return entry
 
 def get_episode_audio_url(podcast_entry):
