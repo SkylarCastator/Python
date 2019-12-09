@@ -5,7 +5,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 from nltk.corpus import names
 from nltk.stem import WordNetLemmatizer
 #Simple Native Bayes System
-from sklearn.native_bayes import MultinomialNB
+from sklearn.naive_bayes import MultinomialNB
 from sklearn.feature_extraction.text import TfidfVectorizer
 from collections import defaultdict
 
@@ -42,9 +42,9 @@ def clean_text(docs):
                     for word in doc.split()
                     if letters_only(word)
                     and word not in all_names]))
+    return cleaned_docs
 
 cleaned_emails = clean_text(emails)
-cleaned_emails[0]
 
 cv = CountVectorizer(stop_words="english", max_features=500)
 
@@ -52,7 +52,7 @@ term_docs = cv.fit_transform(cleaned_emails)
 print (term_docs[0])
 feature_names = cv.get_feature_names()
 print (feature_names[100])
-feature_mapping = cv.vocabulary_
+feature_mapping = cv.vocabulary()
 
 def get_label_index(labels):
     from collections import defaultdict
@@ -106,7 +106,7 @@ feature_names[:5]
 def get_posterior(term_document_matrix, prior, likelihood):
     """Compute prosterior of testing samples, based on prior and likelihood
     Args:
-        term_document_matric (sparse matrix)
+        term_document_matrix (sparse matrix)
         prior (dictionary, with class label as key)
         likelihood(dictionary with class label as key corresponding conditional probability vestor as value)
     Returns:
@@ -126,12 +126,13 @@ def get_posterior(term_document_matrix, prior, likelihood):
             for count, index in zip(counts, indices):
                 posterior[label] += np.log(likelihood_label[index])*count
             #exp(-1000) :exp(-999)will cause zero division error,'
-            #however it equates to exp(0) :exp(1)min_log_posterior = min(posterior.values())
+            #however it equates to exp(0) :exp(1)
+            min_log_posterior = min(posterior.values())
             for label in posterior:
                 try:
                     posterior[label] = np.exp(posterior[label] - min_log_posterior)
                 except:
-                    #if ones log value is excessiverly large, asiign it infinity
+                    #if ones log value is excessively large, assign it infinity
                     posterior[label] = float('inf')
             #normalize so that all sums up to 1
             sum_posterior = sum(posterior.values())
@@ -161,7 +162,7 @@ correct =0.0
 for pred, actual in zip(posterior, Y_test):
     if actual ==1:
         if pred[1] >= 0.5:
-            cprrect += 1
+            correct += 1
     elif pred[0] > 0.5:
         correct += 1
     print('The accuracy on {0} testing samples is : {1:.1f}%'.format(len(Y_test), correct/len(Y_test)*100))
@@ -170,7 +171,7 @@ for pred, actual in zip(posterior, Y_test):
 clf = MultinomialNB(alpha=1.0, fit prior=True)
 clf.fit(term_docs_train, Y_train)
 predict_prob = clf.predict_proba(term_docs_test)
-prediction_prob[0:10]
+predict_prob[0:10]
 accuracy = clf.score(term_docs_test,Y_test)
 print('The accuracy using MutlinoomialNB is: (0:.1f)%'.format(accuracy*100))
 
@@ -181,14 +182,14 @@ def inversedocumentfrequency():
     for train_indices, test_indices in k_fold.split(cleaned_emails, labels):
       X_train, Xtest = cleaned_emails_np[train_indices], cleaned_emails_np[test_indices]
       Y_train, Y_test = labels_np[train_indices], labels_np[test_indices]
-      tfiddf_vectorizer = TfidfVEctorizer(sublinear_tf=True, max_df=0.5, stop_words='english', max_features=8000)
+      tfidf_vectorizer = TfidfVectorizer(sublinear_tf=True, max_df=0.5, stop_words='english', max_features=8000)
       term_docs_train = tfidf_vectorizer.fit_transform(X_train)
       term_docs_test = tfidf_vectorizer.transform(X_test)
-      for smoothing_factor in smoothing_factor_option:
+      for smoothing_factor in smoothing_factoring_option:
           clf = MultinomialNB(alpha=smoothing_factor, fit_prior=True)
           clf.fit(term_docs_train, Y_train)
           predition_prob = clf.predict_prob[:, 1]
-          auc = roc_auc_score(Y_test, pos_prob)
+          auc = auc_record.score(Y_test, predition_prob)
           auc_record[smoothing_factor] += auc
           print('max features smoothing fit prior auc')
           for smoothing, smoothing_record in auc_record.iteritems():

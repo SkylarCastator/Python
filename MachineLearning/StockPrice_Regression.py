@@ -1,12 +1,12 @@
 import quandl
+import pandas as pd
+import numpy as np
 
-myudata = quandl.get("YAHOO/INDEX_DJI", start_date="2005-12-01", end_date="2005-12-05")
-mydata
-
+mydata = quandl.get("YAHOO/INDEX_DJI", start_date="2005-12-01", end_date="2005-12-05")
 authtoken ='XXX'
 
 def get_data_quandl(symbol, start_date, end_date):
-    data = quandl.gty(symbol, start_date=start_date, end_date, authtoken=authtoken)
+    data = quandl.gty(symbol, start_date=start_date, end_date=end_date, authtoken=authtoken)
     return data
 
 def generate_features(df):
@@ -27,7 +27,7 @@ def generate_features(df):
     df_new['volume_1'] = df['Volume'].shift(1)
     #31 orginial features
     #average prive
-    df_new['avg_price_5'] = pd.rolling_mean(df['Close'], window=5),shift(1)
+    df_new['avg_price_5'] = pd.rolling_mean(df['Close'], window=5).shift(1)
     #rolling_mean calculates the moving average given a window
     df_new['avg_price_30'] = pd.rolling_mean(df['Close'], window=21).shift(1)
     df_new['avg_price_365'] = pd.rolling_mean(df['Close'], window=252).shift(1)
@@ -37,7 +37,7 @@ def generate_features(df):
     #average volume
     df_new['avg_volume_5'] = pd.rolling_mean(df['Volume'], window=5).shift(1)
     df_new['avg_volume_30'] = pd.rolling_mean(df['Volume'], window=21).shift(1)
-    df_new['avg_volume_365'] = pd_rolling_mean(df['Volume'], window=252).shift(1)
+    df_new['avg_volume_365'] = pd.rolling_mean(df['Volume'], window=252).shift(1)
     df_new['ratio_avg_volume_5_30'] = df_new['avg_volume_5'] / df_new['avg_volume_30']
     df_new['ratio_avg_volume_5_365'] = df_new['avg_volume_5'] / df_new['avg_volume_365']
     df_new['ratio_avg_volume_30_365'] = df_new['avg_volume_30'] / df_new['avg_volume_365']
@@ -101,7 +101,7 @@ def update_weights_gd(X_train, y_tain, weights,learning_rate):
         numpy.ndarray, update weights
     """
     predictions = compute_prediction(X_train, weights)
-    weights_delta = np.dot(X_train.T, y_train - preditions)]
+    weights_delta = np.dot(X_train.T, y_train - predictions)
     m = y_train.shape[0]
     weights += learning_rate / float(m) * weights_delta
     return weights
@@ -114,11 +114,11 @@ def compute_cost(X, y, weights):
     Returns:
         float
     """
-    predictions = compute_predictions(X, weights)
+    predictions = compute_prediction(X, weights)
     cost = np.mean((predictions - y) **2 /2.0)
     return cost
 
-def train_linear_regression(X_train, y_train, max_iter, learning_ratem fit_intercept=False):
+def train_linear_regression(X_train, y_train, max_iter, learning_rate, fit_intercept=False):
     """Train a linear regression model with graddient descent
     Args:
         X_train, y_train (numpy.ndarray, training data set)
@@ -131,13 +131,13 @@ def train_linear_regression(X_train, y_train, max_iter, learning_ratem fit_inter
     if fit_intercept:
         intercept = np.ones((X_train.shape[0], 1))
         X_train = np.hstack((intercept, X_train))
-    weights = np.zero(X_train,shape[0], 1))
-    for interation in range(max_iter):
+    weights = np.zero(X_train.shape[0], 1)
+    for iteration in range(max_iter):
         weights = update_weights_gd(X_train, y_train, weights, learning_rate)
         #Cheack the cost for everry 100 (fopr exampe) iterations
-        if iteration % 100 = 0:
+        if iteration % 100 == 0:
             print(compute_cost(X_train, y_train, weights))
-    return weigths
+    return weights
 
 def predict(X, weights):
     if X.shape[1] == weights.shape[0] - 1:
@@ -146,20 +146,20 @@ def predict(X, weights):
     return compute_prediction(X, weights)
 
 #Example set of data
-X_train = np.array([[6], [2], [3], [4], [1], [5], [2]. [6], [4], [7]])
+X_train = np.array([[6], [2], [3], [4], [1], [5], [2], [6], [4], [7]])
 y_train = np.array([5.5,1.6, 2.2, 3.7, 0.8, 5.2, 1.5, 5.3, 4.4, 6.8])
-weights = train_linear_regresion(X_train, y_train, max_iter=100, learning_rate=0.01, fit_intercept=True)
+weights = train_linear_regression(X_train, y_train, max_iter=100, learning_rate=0.01, fit_intercept=True)
 
-X_test = np.array([[2.3], [3.5], [5 .2], [2.8]])
+X_test = np.array([[2.3], [3.5], [5.2], [2.8]])
 predictions = predict(X_test, weights)
 import matplotlib.pyplot as plt
 plt.scatter(X_train[:, 0], y_train, markker='o', c='b')
-plt.scatter(X_test[:, 0], preditions, marker='*', c='k')
+plt.scatter(X_test[:, 0], predictions, marker='*', c='k')
 plt.xlabel('x')
 plt.ylabel('y')
 plt.show()
 
-from sklearn.linear_model import SGDREgressor
+from sklearn.linear_model import SGDRegressor
 regressor = SGDRegressor(loss='squared_loss', penalty='12', alpha=0.0001, learning_rate='constant', eta=0.01, n_iter=1000)
 
 #Decision tree regression
@@ -169,7 +169,7 @@ def mse (targets):
         return 0
     return np.var(targets)
 
-def weighted_mse(groups)
+def weighted_mse(groups):
     """Calculate weighted MSE of children after a split
     Args:
         groups (list of children, and a child consists a list of targets)
@@ -205,7 +205,7 @@ def split_node(X, y, index, value):
     right = [X[mask, :], y[mask]]
     return left, right
 
-def get_best_split(X, y)
+def get_best_split(X, y):
     """Obtain the best splitting point and resulting children
     for the data set X, y
     Args:
@@ -214,18 +214,19 @@ def get_best_split(X, y)
     Returns:
         dict {indec: index pf the feature, value: feature value, children: ;eft and right children}
         """
-    best_index, best_value, best_score, children = None, None. 1e10, None
-    for index in rangte(len(X[:, index])):
-        groups = split_node(X, y, index, value)
+    best_index, best_value, best_score, children = None, None, 1e10, None
+    for index in range(len(X[:, best_index])):
+        groups = split_node(X, y, index, best_value)
         impurity = weighted_mse([groups[0][1], groups[1][1]])
-        if imputiyu < best_score:
-            best_index, best_value, best_score, children = index, value, impurity, groups
+        if impurity < best_score:
+            best_index, best_value, best_score, children = index, best_value, impurity, groups
     return {'index': best_index, 'value': best_value, 'children': children}
 
 def get_leaf(targets):
     #obtain the leaf as the mean of the targets
     return np.mean(targets)
-plit(node, max_depth, min_size, depth):
+
+def split(node, max_depth, min_size, depth):
     """Split children of a node to construct new nodes opr assign them terminals
     Args:
         node(dict, with children info)
@@ -243,7 +244,7 @@ plit(node, max_depth, min_size, depth):
         return
     #Check if the current depth exceeds the maximal depth
     if depth >= max_depth:     
-        node['left'], node['right'] = get_leaf(ledft[1]), get_leaf(right[1])
+        node['left'], node['right'] = get_leaf(left[1]), get_leaf(right[1])
         return
     #Check if the left child has enough samples
     if left[1].size <= min_size:
@@ -293,7 +294,7 @@ tree = train_tree(X_train, y_train, 2, 2)
 CONDITION = {'numerical': {'yes': '>=', 'no': '<'}, 'catagorical': {'yes': 'is', 'no': 'is not'}}
 
 def visualize_tree(node, depth=0):
-    if isinstince(node, dict):
+    if isinstance(node, dict):
         if type(node['value']) in [int, float]:
             condition = CONDITION['numerical']
         else:
@@ -318,12 +319,12 @@ X_test = boston.data[-num_test:, :]
 y_test = boston.target[-num_test:]
 from sklearn.tree import DecisionTreeRegressor
 regressor.fit(X_train, y_train)
-predictions = regessor.predict(X_test)
-print(preditions)
+predictions = regressor.predict(X_test)
+print(predictions)
 
 print(y_test)
 
-from sklearn.ensemble import RandomForestREgressor
+from sklearn.ensemble import RandomForestRegressor
 regressor = RandomForestRegressor(n_estimators=100, max_depth=10, min_samples_split=3)
 regressor.fit(X_train, y_train)
 predictions = regressor.predict(X_test)
@@ -333,12 +334,12 @@ print(predictions)
 from sklearn.svm import SVR
 regressor = SVR(C=0.1, epsilon=0.02, kernel='linear')
 regressor.fit(X_train, y_train)
-predictions = regressor.predict(x_test)
+predictions = regressor.predict(X_test)
 print(predictions)
 
 #Regression performace evaluatio = dataset.;pad_diabetes()
 num_test = 30 #the last 30 samples as testing set
-X_train = diabetes.data[:-numn_test, :]
+X_train = diabetes.data[:-num_test, :]
 y_train = diabetes.target[:-num_test]
 X_test = diabetes.data[-num_test:, :]
 y_test = diabetes.target[-num_test:]
@@ -349,7 +350,7 @@ grid_search = GridSearchCV(regressor, param_grid, cv=3)
 
 grid_search.fit(X_train, y_train)
 print(grid_search.best_params_)
-('penalty':None, 'alpha': 1e-05, 'eta':0.01, 'n_iter': 300}
+#('penalty':None, 'alpha': 1e-05, 'eta':0.01, 'n_iter': 300}
 regressor_best = grid_search.best_estimator_
 predictions = regressor_best.predict(X_test)
 
@@ -372,7 +373,7 @@ y_train = data_train[y_column]
 x_train.shape
 y_train.shape
 
-start_test = dateime.datetime(2015, 1, 1, 0, 0)
+start_test = datetime.datetime(2015, 1, 1, 0, 0)
 end_test = datetime.datetime(2015, 12, 31, 0, 0)
 data_test =data.ix[start_test:end_test]
 X_test = data_test[X_columns]
@@ -389,20 +390,20 @@ X_scaled_test = scaler.transform(X_test)
 param_grid = {
         "alpha": [3e-06, 1e-05, 3e-5],
         "eta0": [0.01, 0.03,0.1],}
-lr =SGDREgressor(penalty='12', n_iter=1000)
+lr =SGDRegressor(penalty='12', n_iter=1000)
 grid_search = GridSearchCV(lr,param_grid, cv=5, scoring='neg_mean_absolute_error')
 grid_search.fit(X_scaled_train, y_train)
 
 print('MSE:{0:.3f}'.format(mean_squared_error(y_test, predictions)))
-print('MAE: {0:.3f}'.format(mean_absolute_error(y_test, predicitions)))
-print'R^2: {0:.3f}'.format(r2_score(y_test, predicitions)))
+print('MAE: {0:.3f}'.format(mean_absolute_error(y_test, predictions)))
+print('R^2: {0:.3f}'.format(r2_score(y_test, predictions)))
 
 param_grid = {
-        "max_depth": [30,50]
+        "max_depth": [30,50],
         "min_samples_split": [3,5,10],
         }
-rf = RandomFOrestREgressor(n_estimators=1000)
-grid_search = GridSearchCV(rf, para,_grid, cv=5, scoring='neg_mean_absolute_error')
+rf = RandomForestRegressor(n_estimators=1000)
+grid_search = GridSearchCV(rf, param_grid, cv=5, scoring='neg_mean_absolute_error')
 grid_search.fit(X_train, y_train)
 
 print(grid_search.best_params_)
