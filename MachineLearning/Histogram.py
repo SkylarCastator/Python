@@ -4,10 +4,10 @@ import sklearn.feature_extraction.text
 import CountVectorizer
 import numpy as np
 import seaborn as sns
-import matplotlib.pyplot
-from sklearn.datasets import fetch_20newgroups
+import matplotlib.pyplot as plt
+from sklearn.datasets import fetch_20newsgroups
 from nltk.corpus import names
-from nltk.stem import WordLemmatizer
+from nltk.stem import WordNetLemmatizer
 
 def letters_only(astr):
     return astr.isalpha()
